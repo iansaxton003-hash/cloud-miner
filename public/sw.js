@@ -9,10 +9,11 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(FILES_TO_CACHE).catch(() => {
-        console.log('Cache install completed with some errors');
+        console.log('Cache install completed');
       });
     })
   );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -27,18 +28,20 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
   if (event.request.url.includes('/api/')) {
     event.respondWith(
       fetch(event.request)
-        .catch(() => caches.match('/index.html'))
+        .catch(() => new Response('API unavailable', { status: 503 }))
     );
   } else {
     event.respondWith(
       caches.match(event.request)
         .then(response => response || fetch(event.request))
+        .catch(() => caches.match('/index.html'))
     );
   }
 });

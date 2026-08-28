@@ -23,7 +23,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -33,6 +33,11 @@
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid rgba(255, 215, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         h1 {
@@ -40,16 +45,26 @@
             align-items: center;
             gap: 10px;
             font-size: 28px;
-            margin-bottom: 10px;
         }
 
-        .logo {
-            font-size: 32px;
-        }
-
-        .status {
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 14px;
-            color: #ffd700;
+        }
+
+        .status-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .tabs {
@@ -71,11 +86,6 @@
             font-size: 14px;
             transition: all 0.3s;
             white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: #ffd700;
         }
 
         .tab-btn.active {
@@ -158,14 +168,9 @@
             box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 215, 0, 0.2);
-            color: #ffd700;
-            border: 1px solid #ffd700;
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-danger {
@@ -201,11 +206,6 @@
             color: #ffd700;
         }
 
-        .session-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
         .session-item {
             background: rgba(255, 215, 0, 0.05);
             border: 1px solid rgba(255, 215, 0, 0.2);
@@ -215,7 +215,7 @@
             font-size: 13px;
         }
 
-        .session-item .status-badge {
+        .status-badge {
             display: inline-block;
             padding: 4px 8px;
             border-radius: 4px;
@@ -239,17 +239,17 @@
             color: #ff6b6b;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
         .alert {
             padding: 12px;
             border-radius: 6px;
             margin-bottom: 15px;
             font-size: 14px;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .alert-success {
@@ -268,40 +268,6 @@
             background: rgba(100, 200, 255, 0.1);
             border: 1px solid rgba(100, 200, 255, 0.3);
             color: #64c8ff;
-        }
-
-        .install-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #ffd700;
-            color: #000;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                gap: 5px;
-            }
-
-            .tab-btn {
-                padding: 10px 15px;
-                font-size: 13px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
         }
 
         .profit-meter {
@@ -325,31 +291,107 @@
             font-weight: bold;
             color: #000;
         }
+
+        .live-feed {
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .feed-item {
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            color: #64c8ff;
+        }
+
+        .feed-item.success {
+            color: #00ff00;
+        }
+
+        .feed-item.error {
+            color: #ff6b6b;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            h1 {
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><span class="logo">⛏️</span> Cloud Miner</h1>
-            <p class="status">⚠️ REAL MINING ONLY - NO SIMULATION</p>
-            <small style="color: #aaa;">Connect to blockchain mining pools and earn cryptocurrency</small>
+            <div>
+                <h1>⛏️ Cloud Miner</h1>
+                <small style="color: #aaa;">Real cryptocurrency mining platform</small>
+            </div>
+            <div class="status-indicator">
+                <span class="status-light"></span>
+                <span>LIVE</span>
+            </div>
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('auto-mine')">AUTO MINE</button>
+            <button class="tab-btn active" onclick="switchTab('dashboard')">DASHBOARD</button>
+            <button class="tab-btn" onclick="switchTab('mining')">MINING</button>
             <button class="tab-btn" onclick="switchTab('profit')">💰 PROFIT</button>
             <button class="tab-btn" onclick="switchTab('hashrate')">⚡ HASHRATE</button>
-            <button class="tab-btn" onclick="switchTab('sessions')">SESSIONS</button>
-            <button class="tab-btn" onclick="switchTab('settings')">SETTINGS</button>
+            <button class="tab-btn" onclick="switchTab('feed')">📡 LIVE FEED</button>
         </div>
 
-        <!-- AUTO MINE TAB -->
-        <div id="auto-mine" class="tab-content active">
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Active Sessions</div>
+                    <div class="stat-value" id="active-sessions">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Hashrate</div>
+                    <div class="stat-value" id="total-hashrate">0 TH/s</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Daily Profit</div>
+                    <div class="stat-value" id="dashboard-daily-profit">$0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Monthly Projected</div>
+                    <div class="stat-value" id="dashboard-monthly-profit">$0.00</div>
+                </div>
+            </div>
+
             <div class="card">
-                <div class="card-title">🚀 Smart Mining Search</div>
-                <p style="color: #aaa; margin-bottom: 15px;">Automatically find and mine profitable cryptocurrencies</p>
+                <div class="card-title">🔄 Recent Activity</div>
+                <div id="dashboard-activity"></div>
+            </div>
+        </div>
+
+        <!-- MINING TAB -->
+        <div id="mining" class="tab-content">
+            <div id="alert-container"></div>
+            
+            <div class="card">
+                <div class="card-title">🚀 Auto Mining</div>
                 <button class="btn" onclick="searchAndMine()">SEARCH & AUTO-MINE</button>
-                <p style="color: #888; font-size: 12px; margin-top: 10px;">Scans popular coins and delegates to real mining pools</p>
+                <small style="color: #888; display: block; margin-top: 10px;">Scans popular coins and delegates to real mining pools</small>
             </div>
 
             <div class="card">
@@ -370,30 +412,12 @@
                     </div>
                     <div>
                         <div class="form-group">
-                            <label>Hashrate (TH/s)</label>
+                            <label>Hashrate (TH/s): <span style="color: #ffd700;" id="hashrate-display">500</span></label>
                             <input type="range" id="hashrate-slider" value="500" min="1" max="10000000" step="100" oninput="updateHashrateDisplay()">
-                            <input type="number" id="hashrate" value="500" min="1" max="10000000" oninput="updateHashrateSlider()">
                         </div>
                     </div>
                 </div>
                 <button class="btn" onclick="startMining()">START MINING</button>
-            </div>
-
-            <div id="alert-container"></div>
-
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">Active Sessions</div>
-                    <div class="stat-value" id="active-sessions">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Total Profit</div>
-                    <div class="stat-value" id="total-profit">$0.00</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Total Hashrate</div>
-                    <div class="stat-value" id="total-hashrate">0</div>
-                </div>
             </div>
         </div>
 
@@ -403,22 +427,26 @@
                 <div class="card-title">💰 Profit Tracker</div>
                 <div class="stats-grid">
                     <div class="stat-box">
-                        <div class="stat-label">Daily Profit</div>
+                        <div class="stat-label">Daily</div>
                         <div class="stat-value" id="daily-profit">$0.00</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-label">Monthly Profit</div>
+                        <div class="stat-label">Weekly</div>
+                        <div class="stat-value" id="weekly-profit">$0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Monthly</div>
                         <div class="stat-value" id="monthly-profit">$0.00</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-label">Annual Profit</div>
+                        <div class="stat-label">Annual</div>
                         <div class="stat-value" id="annual-profit">$0.00</div>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-title">📊 Session Profit Breakdown</div>
+                <div class="card-title">📊 Session Breakdown</div>
                 <div id="profit-analysis"></div>
             </div>
         </div>
@@ -432,82 +460,75 @@
             </div>
         </div>
 
-        <!-- SESSIONS TAB -->
-        <div id="sessions" class="tab-content">
+        <!-- LIVE FEED TAB -->
+        <div id="feed" class="tab-content">
             <div class="card">
-                <div class="card-title">🔄 Active Mining Sessions</div>
-                <div id="sessions-list" class="session-list"></div>
+                <div class="card-title">📡 Live Mining Feed</div>
+                <div id="live-feed" class="live-feed">
+                    <div class="feed-item">Waiting for mining activity...</div>
+                </div>
             </div>
-        </div>
 
-        <!-- SETTINGS TAB -->
-        <div id="settings" class="tab-content">
             <div class="card">
-                <div class="card-title">⚙️ Settings</div>
-                <div class="form-group">
-                    <label>Electricity Cost (USD/kWh)</label>
-                    <input type="number" id="electricity-cost" value="0.12" step="0.01" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Pool Fee (%)</label>
-                    <input type="number" id="pool-fee" value="1" step="0.1" min="0" max="10">
-                </div>
-                <button class="btn" onclick="saveSettings()">SAVE SETTINGS</button>
+                <div class="card-title">🔄 Active Sessions</div>
+                <div id="sessions-list"></div>
             </div>
         </div>
     </div>
 
-    <button class="install-btn" id="install-btn" onclick="installApp()">📱 Install App</button>
-
     <script>
         const API_BASE = 'http://localhost:3000/api';
-        let deferredPrompt;
+        let feedItems = [];
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').style.display = 'block';
-        });
+        function addFeedItem(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            feedItems.unshift({ message, type, timestamp });
+            if (feedItems.length > 100) feedItems.pop();
+            updateFeed();
+        }
 
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    deferredPrompt = null;
-                    document.getElementById('install-btn').style.display = 'none';
-                });
-            }
+        function updateFeed() {
+            const feedDiv = document.getElementById('live-feed');
+            if (!feedDiv) return;
+            
+            feedDiv.innerHTML = feedItems.map(item => 
+                `<div class="feed-item ${item.type}">[${item.timestamp}] ${item.message}</div>`
+            ).join('');
+            feedDiv.scrollTop = 0;
         }
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
+            const content = document.getElementById(tabName);
+            if (content) {
+                content.classList.add('active');
+            }
             event.target.classList.add('active');
             
-            if (tabName === 'sessions') refreshSessions();
             if (tabName === 'profit') refreshProfit();
             if (tabName === 'hashrate') refreshHashrate();
+            if (tabName === 'feed') refreshSessions();
         }
 
         function updateHashrateDisplay() {
-            document.getElementById('hashrate').value = document.getElementById('hashrate-slider').value;
-        }
-
-        function updateHashrateSlider() {
-            document.getElementById('hashrate-slider').value = document.getElementById('hashrate').value;
+            document.getElementById('hashrate-display').textContent = document.getElementById('hashrate-slider').value;
         }
 
         function showAlert(message, type = 'info') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
             alertDiv.textContent = message;
-            document.getElementById('alert-container').innerHTML = alertDiv.outerHTML;
-            setTimeout(() => alertDiv.remove(), 5000);
+            const container = document.getElementById('alert-container');
+            if (container) {
+                container.innerHTML = alertDiv.outerHTML;
+                setTimeout(() => container.innerHTML = '', 5000);
+            }
         }
 
         async function searchAndMine() {
             try {
+                addFeedItem('Starting auto-mine search...', 'info');
                 const response = await fetch(`${API_BASE}/mining/auto/search-and-mine`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -516,21 +537,30 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showAlert(`✅ Started mining ${data.rigsStarted} coins. Total profit: $${data.totalProfit}`, 'success');
+                    addFeedItem(`✅ Auto-mine started: ${data.rigsStarted} coins`, 'success');
+                    showAlert(`✅ Started mining ${data.rigsStarted} coins`, 'success');
                     refreshStats();
                 } else {
+                    addFeedItem(`❌ Auto-mine failed: ${data.error}`, 'error');
                     showAlert(`❌ ${data.error || 'Mining failed'}`, 'error');
                 }
             } catch (error) {
-                showAlert(`Connection error: ${error.message}`, 'error');
+                addFeedItem(`❌ Connection error: ${error.message}`, 'error');
+                showAlert(`Error: ${error.message}`, 'error');
             }
         }
 
         async function startMining() {
-            const crypto = document.getElementById('crypto-select').value;
-            const hashrate = document.getElementById('hashrate').value;
+            const crypto = document.getElementById('crypto-select')?.value || 'BTC';
+            const hashrate = document.getElementById('hashrate-slider')?.value || '500';
+
+            if (!crypto || !hashrate) {
+                showAlert('Please select cryptocurrency and hashrate', 'error');
+                return;
+            }
 
             try {
+                addFeedItem(`Starting ${crypto} mining at ${hashrate} TH/s...`, 'info');
                 const response = await fetch(`${API_BASE}/mining/auto/start`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -539,12 +569,15 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showAlert(`✅ Mining ${crypto} started at ${hashrate} TH/s`, 'success');
+                    addFeedItem(`✅ Mining ${crypto} at ${hashrate} TH/s started`, 'success');
+                    showAlert(`✅ Mining ${crypto} at ${hashrate} TH/s`, 'success');
                     refreshStats();
                 } else {
+                    addFeedItem(`❌ Start mining failed: ${data.error}`, 'error');
                     showAlert(`❌ ${data.error}`, 'error');
                 }
             } catch (error) {
+                addFeedItem(`❌ Mining error: ${error.message}`, 'error');
                 showAlert(`Error: ${error.message}`, 'error');
             }
         }
@@ -552,132 +585,164 @@
         async function refreshStats() {
             try {
                 const response = await fetch(`${API_BASE}/mining/auto`);
+                if (!response.ok) throw new Error('Failed to fetch stats');
                 const data = await response.json();
                 
-                document.getElementById('active-sessions').textContent = data.activeSessions;
-                document.getElementById('total-profit').textContent = `$${data.totalProfit}`;
+                const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+                const activeSessions = sessions.filter(s => s && s.status === 'mining').length;
+                
+                document.getElementById('active-sessions').textContent = activeSessions;
+                document.getElementById('total-profit').textContent = `$${(data.totalProfit || 0).toFixed(2)}`;
+                document.getElementById('dashboard-daily-profit').textContent = `$${(data.totalProfit || 0).toFixed(2)}`;
+                document.getElementById('dashboard-monthly-profit').textContent = `$${((data.totalProfit || 0) * 30).toFixed(2)}`;
                 
                 let totalHashrate = 0;
-                data.sessions.forEach(s => totalHashrate += s.hashrate);
-                document.getElementById('total-hashrate').textContent = totalHashrate.toLocaleString();
+                sessions.forEach(s => {
+                    if (s && s.hashrate) totalHashrate += parseInt(s.hashrate);
+                });
+                document.getElementById('total-hashrate').textContent = totalHashrate.toLocaleString() + ' TH/s';
+                
+                updateDashboardActivity();
             } catch (error) {
                 console.error('Stats error:', error);
+                addFeedItem(`⚠️ Could not update stats: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateDashboardActivity() {
+            try {
+                const response = await fetch(`${API_BASE}/mining/auto`);
+                if (!response.ok) throw new Error('Failed to fetch activity');
+                const data = await response.json();
+                
+                const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+                const html = sessions.slice(0, 5).map(s => {
+                    if (!s) return '';
+                    return `
+                        <div class="session-item">
+                            <span class="status-badge status-${s.status || 'stopped'}">${(s.status || 'stopped').toUpperCase()}</span>
+                            <strong>${s.cryptocurrency || 'N/A'}</strong> | ${s.hashrate || 0} TH/s<br>
+                            <small style="color: #888;">Profit: $${(s.dailyProfit || 0).toFixed(2)}/day</small>
+                        </div>
+                    `;
+                }).join('');
+                
+                const activity = document.getElementById('dashboard-activity');
+                if (activity) {
+                    activity.innerHTML = html || '<p style="color: #aaa;">No mining activity</p>';
+                }
+            } catch (error) {
+                console.error('Activity error:', error);
             }
         }
 
         async function refreshSessions() {
             try {
                 const response = await fetch(`${API_BASE}/mining/auto`);
+                if (!response.ok) throw new Error('Failed to fetch sessions');
                 const data = await response.json();
                 
-                const html = data.sessions.map(s => `
-                    <div class="session-item">
-                        <span class="status-badge status-${s.status}">${s.status.toUpperCase()}</span>
-                        <strong>${s.cryptocurrency}</strong> | ${s.hashrate} TH/s<br>
-                        <small>Pool: ${s.poolAddress} | Latency: ${s.poolLatency}ms</small><br>
-                        <small style="color: #ffd700;">Profit: $${s.dailyProfit}/day | Accuracy: ${s.hashAccuracy}%</small>
-                        <button class="btn btn-danger" style="margin-top: 8px; padding: 6px;" onclick="stopSession('${s.id}')">STOP</button>
-                    </div>
-                `).join('');
+                const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+                const html = sessions.map(s => {
+                    if (!s) return '';
+                    return `
+                        <div class="session-item">
+                            <span class="status-badge status-${s.status || 'stopped'}">${(s.status || 'stopped').toUpperCase()}</span>
+                            <strong>${s.cryptocurrency || 'N/A'}</strong> | ${s.hashrate || 0} TH/s<br>
+                            <small>Hashrate: ${s.hashrate || 0} | Accuracy: ${s.hashAccuracy || 0}%</small><br>
+                            <small style="color: #ffd700;">Profit: $${(s.dailyProfit || 0).toFixed(2)}/day</small>
+                        </div>
+                    `;
+                }).join('');
                 
-                document.getElementById('sessions-list').innerHTML = html || '<p style="color: #aaa;">No active sessions</p>';
+                const sessionsList = document.getElementById('sessions-list');
+                if (sessionsList) {
+                    sessionsList.innerHTML = html || '<p style="color: #aaa;">No active sessions</p>';
+                }
             } catch (error) {
                 console.error('Sessions error:', error);
+                addFeedItem(`⚠️ Could not fetch sessions: ${error.message}`, 'error');
             }
         }
 
         async function refreshProfit() {
             try {
                 const response = await fetch(`${API_BASE}/mining/auto/profit-analysis`);
+                if (!response.ok) throw new Error('Failed to fetch profit data');
                 const data = await response.json();
                 
-                const dailyProfit = parseFloat(data.totalDailyProfit);
+                const dailyProfit = parseFloat(data.totalDailyProfit || 0);
+                const weeklyProfit = dailyProfit * 7;
                 const monthlyProfit = dailyProfit * 30;
                 const annualProfit = dailyProfit * 365;
                 
                 document.getElementById('daily-profit').textContent = `$${dailyProfit.toFixed(2)}`;
+                document.getElementById('weekly-profit').textContent = `$${weeklyProfit.toFixed(2)}`;
                 document.getElementById('monthly-profit').textContent = `$${monthlyProfit.toFixed(2)}`;
                 document.getElementById('annual-profit').textContent = `$${annualProfit.toFixed(2)}`;
                 
-                const html = data.sessions.map(s => `
-                    <div class="card" style="background: rgba(255, 215, 0, 0.05); margin-bottom: 10px;">
-                        <strong>${s.cryptocurrency}</strong><br>
-                        <small>Hashrate: ${s.hashrate} TH/s</small><br>
-                        <div class="profit-meter">
-                            <div class="profit-fill" style="width: ${Math.min(parseFloat(s.dailyProfit) / 10, 100)}%">Profit</div>
+                const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+                const html = sessions.map(s => {
+                    if (!s) return '';
+                    const profit = parseFloat(s.dailyProfit || 0);
+                    const fillWidth = Math.min((profit / 10) * 100, 100);
+                    return `
+                        <div class="card" style="background: rgba(255, 215, 0, 0.05); margin-bottom: 10px;">
+                            <strong>${s.cryptocurrency || 'N/A'}</strong><br>
+                            <div class="profit-meter">
+                                <div class="profit-fill" style="width: ${fillWidth}%">$${profit.toFixed(2)}</div>
+                            </div>
+                            <small>Daily: ${s.dailyReward || '0'} | Power: ${s.dailyPower || '0'} | Net: <span style="color: #00ff00;">$${profit.toFixed(2)}</span></small>
                         </div>
-                        <small>Daily: ${s.dailyReward} | Power: ${s.dailyPower} | Net: <span style="color: #00ff00;">${s.dailyProfit}</span></small>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
                 
-                document.getElementById('profit-analysis').innerHTML = html;
+                const analysis = document.getElementById('profit-analysis');
+                if (analysis) {
+                    analysis.innerHTML = html || '<p style="color: #aaa;">No active sessions</p>';
+                }
             } catch (error) {
                 console.error('Profit error:', error);
+                addFeedItem(`⚠️ Could not fetch profit data: ${error.message}`, 'error');
             }
         }
 
         async function refreshHashrate() {
             try {
                 const response = await fetch(`${API_BASE}/mining/auto`);
+                if (!response.ok) throw new Error('Failed to fetch hashrate data');
                 const data = await response.json();
                 
-                const html = data.sessions.map(s => `
-                    <div class="card" style="background: rgba(255, 215, 0, 0.05); margin-bottom: 10px;">
-                        <strong>${s.cryptocurrency}</strong> - ${s.workerName}<br>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label>Hashrate: <span style="color: #ffd700;">${s.hashrate} TH/s</span></label>
-                            <input type="range" value="${s.hashrate}" min="0" max="10000000" step="100" oninput="updateHashrate('${s.rigId}', this.value)" style="cursor: pointer;">
+                const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+                const html = sessions.map(s => {
+                    if (!s) return '';
+                    return `
+                        <div class="card" style="background: rgba(255, 215, 0, 0.05); margin-bottom: 10px;">
+                            <strong>${s.cryptocurrency || 'N/A'}</strong><br>
+                            <label>Hashrate: <span style="color: #ffd700;">${s.hashrate || 0} TH/s</span></label>
+                            <input type="range" value="${s.hashrate || 0}" min="0" max="10000000" step="100" style="cursor: pointer; margin-top: 8px;">
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
                 
-                document.getElementById('hashrate-builder').innerHTML = html || '<p style="color: #aaa;">No active sessions</p>';
+                const builder = document.getElementById('hashrate-builder');
+                if (builder) {
+                    builder.innerHTML = html || '<p style="color: #aaa;">No active sessions to adjust</p>';
+                }
             } catch (error) {
                 console.error('Hashrate error:', error);
+                addFeedItem(`⚠️ Could not fetch hashrate data: ${error.message}`, 'error');
             }
         }
 
-        async function updateHashrate(rigId, hashrate) {
-            try {
-                await fetch(`${API_BASE}/rigs/${rigId}/hashrate`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ hashrate: parseInt(hashrate) })
-                });
-                refreshHashrate();
-                refreshStats();
-            } catch (error) {
-                console.error('Hashrate update error:', error);
-            }
-        }
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            refreshStats();
+        }, 5000);
 
-        async function stopSession(sessionId) {
-            try {
-                await fetch(`${API_BASE}/mining/auto/stop/${sessionId}`, { method: 'POST' });
-                showAlert('✅ Mining session stopped', 'success');
-                refreshSessions();
-                refreshStats();
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        function saveSettings() {
-            const cost = document.getElementById('electricity-cost').value;
-            const fee = document.getElementById('pool-fee').value;
-            localStorage.setItem('electricity-cost', cost);
-            localStorage.setItem('pool-fee', fee);
-            showAlert('✅ Settings saved', 'success');
-        }
-
-        setInterval(refreshStats, 5000);
+        // Initial load
         refreshStats();
-    </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
+        addFeedItem('🚀 Cloud Miner initialized', 'success');
     </script>
 </body>
 </html>
