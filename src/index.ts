@@ -20,9 +20,6 @@ const miningEngine = new MiningEngine(0.12, 1); // $0.12/kWh, 1% pool fee
 // Setup routes
 app.use('/api', createRoutes(rigManager, pluginManager, cryptoSearcher, miningEngine));
 
-// Start mining simulation
-miningEngine.startMining();
-
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -32,7 +29,9 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Cloud Miner running on port ${PORT}`);
   console.log(`API available at http://localhost:${PORT}/api`);
-  console.log(`AUTO MINE tab: POST /api/mining/auto/search-and-mine`);
+  console.log(`⚠️  REAL MINING ONLY - NO SIMULATION`);
+  console.log(`    AUTO MINE: POST /api/mining/auto/search-and-mine`);
+  console.log(`    Profits from actual pool rewards only`);
 });
 
 export default app;
