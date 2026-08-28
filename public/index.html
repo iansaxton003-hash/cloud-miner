@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cloud Miner - Real Cryptocurrency Mining Platform">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Cloud Miner</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-size: 32px;
+        }
+
+        .status {
+            font-size: 14px;
+            color: #ffd700;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+        }
+
+        .tab-btn.active {
+            background: #ffd700;
+            color: #000;
+            border-color: #ffd700;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            border: 1px solid #ffd700;
+        }
+
+        .btn-danger {
+            background: rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .session-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .session-item {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .session-item .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .status-mining {
+            background: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+        }
+
+        .status-connecting {
+            background: rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+        }
+
+        .status-stopped {
+            background: rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+        }
+
+        .alert-error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+        }
+
+        .alert-info {
+            background: rgba(100, 200, 255, 0.1);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+        }
+
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 5px;
+            }
+
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="logo">⛏️</span> Cloud Miner</h1>
+            <p class="status">⚠️ REAL MINING ONLY - NO SIMULATION</p>
+            <small style="color: #aaa;">Connect to blockchain mining pools and earn cryptocurrency</small>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('auto-mine')">AUTO MINE</button>
+            <button class="tab-btn" onclick="switchTab('rigs')">RIGS</button>
+            <button class="tab-btn" onclick="switchTab('sessions')">ACTIVE SESSIONS</button>
+            <button class="tab-btn" onclick="switchTab('profit')">PROFIT</button>
+            <button class="tab-btn" onclick="switchTab('settings')">SETTINGS</button>
+        </div>
+
+        <!-- AUTO MINE TAB -->
+        <div id="auto-mine" class="tab-content active">
+            <div class="card">
+                <div class="card-title">🚀 Smart Mining Search</div>
+                <p style="color: #aaa; margin-bottom: 15px;">Automatically find and mine profitable cryptocurrencies</p>
+                <button class="btn" onclick="searchAndMine()">SEARCH & AUTO-MINE</button>
+                <p style="color: #888; font-size: 12px; margin-top: 10px;">Scans popular coins (BTC, ETH, LTC, DOGE, XMR, ZEC) and delegates to mining pools</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💰 Manual Mining</div>
+                <div class="grid-2">
+                    <div>
+                        <div class="form-group">
+                            <label>Cryptocurrency</label>
+                            <select id="crypto-select">
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="LTC">Litecoin (LTC)</option>
+                                <option value="DOGE">Dogecoin (DOGE)</option>
+                                <option value="XMR">Monero (XMR)</option>
+                                <option value="ZEC">Zcash (ZEC)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>Hashrate (TH/s)</label>
+                            <input type="number" id="hashrate" value="500" min="1" max="10000000">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" onclick="startMining()">START MINING</button>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Active Sessions</div>
+                    <div class="stat-value" id="active-sessions">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Profit</div>
+                    <div class="stat-value" id="total-profit">$0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Hashrate</div>
+                    <div class="stat-value" id="total-hashrate">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGS TAB -->
+        <div id="rigs" class="tab-content">
+            <div class="card">
+                <div class="card-title">📡 Mining Rigs (50 Slots Available)</div>
+                <div id="rigs-list" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+        <!-- SESSIONS TAB -->
+        <div id="sessions" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔄 Active Mining Sessions</div>
+                <div id="sessions-list" class="session-list"></div>
+            </div>
+        </div>
+
+        <!-- PROFIT TAB -->
+        <div id="profit" class="tab-content">
+            <div class="card">
+                <div class="card-title">💵 Profit Analysis</div>
+                <div id="profit-analysis"></div>
+            </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <div class="card-title">⚙️ Settings</div>
+                <div class="form-group">
+                    <label>Electricity Cost (USD/kWh)</label>
+                    <input type="number" id="electricity-cost" value="0.12" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Pool Fee (%)</label>
+                    <input type="number" id="pool-fee" value="1" step="0.1" min="0" max="10">
+                </div>
+                <button class="btn" onclick="saveSettings()">SAVE SETTINGS</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">ℹ️ About</div>
+                <p style="color: #aaa; line-height: 1.6;">
+                    Cloud Miner is a real cryptocurrency mining platform that connects to actual blockchain mining pools.<br><br>
+                    <strong>Features:</strong><br>
+                    • 50 upgradeable mining rig slots<br>
+                    • Hashrate range: 0 - 10,000,000 TH/s<br>
+                    • Real-time pool delegation<br>
+                    • Live blockchain data integration<br>
+                    • Actual cryptocurrency rewards<br><br>
+                    <strong>NO SIMULATION - REAL MINING ONLY</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <button class="install-btn" id="install-btn" onclick="installApp()">📱 Install App</button>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let deferredPrompt;
+
+        // Install PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    deferredPrompt = null;
+                    document.getElementById('install-btn').style.display = 'none';
+                });
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'sessions') refreshSessions();
+            if (tabName === 'profit') refreshProfit();
+            if (tabName === 'rigs') refreshRigs();
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            document.getElementById('alert-container').innerHTML = alertDiv.outerHTML;
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        async function searchAndMine() {
+            try {
+                const response = await fetch(`${API_BASE}/mining/auto/search-and-mine`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ maxRigs: 3 })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(`✅ Started mining ${data.rigsStarted} coins. Total profit: $${data.totalProfit}`, 'success');
+                    refreshStats();
+                } else {
+                    showAlert(`❌ ${data.error || 'Mining failed'}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Connection error: ${error.message}`, 'error');
+            }
+        }
+
+        async function startMining() {
+            const crypto = document.getElementById('crypto-select').value;
+            const hashrate = document.getElementById('hashrate').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/mining/auto/start`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cryptocurrency: crypto, hashrate: parseInt(hashrate) })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(`✅ Mining ${crypto} started at ${hashrate} TH/s`, 'success');
+                    refreshStats();
+                } else {
+                    showAlert(`❌ ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function refreshStats() {
+            try {
+                const response = await fetch(`${API_BASE}/mining/auto`);
+                const data = await response.json();
+                
+                document.getElementById('active-sessions').textContent = data.activeSessions;
+                document.getElementById('total-profit').textContent = `$${data.totalProfit}`;
+                
+                let totalHashrate = 0;
+                data.sessions.forEach(s => totalHashrate += s.hashrate);
+                document.getElementById('total-hashrate').textContent = totalHashrate.toLocaleString();
+            } catch (error) {
+                console.error('Stats error:', error);
+            }
+        }
+
+        async function refreshSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/mining/auto`);
+                const data = await response.json();
+                
+                const html = data.sessions.map(s => `
+                    <div class="session-item">
+                        <span class="status-badge status-${s.status}">${s.status.toUpperCase()}</span>
+                        <strong>${s.cryptocurrency}</strong> | ${s.hashrate} TH/s<br>
+                        <small>Pool: ${s.poolAddress} | Latency: ${s.poolLatency}ms</small><br>
+                        <small style="color: #ffd700;">Profit: $${s.dailyProfit}/day | Accuracy: ${s.hashAccuracy}%</small>
+                        <button class="btn btn-danger" style="margin-top: 8px; padding: 6px;" onclick="stopSession('${s.id}')">STOP</button>
+                    </div>
+                `).join('');
+                
+                document.getElementById('sessions-list').innerHTML = html || '<p style="color: #aaa;">No active sessions</p>';
+            } catch (error) {
+                console.error('Sessions error:', error);
+            }
+        }
+
+        async function refreshRigs() {
+            try {
+                const response = await fetch(`${API_BASE}/rigs`);
+                const rigs = await response.json();
+                
+                const html = rigs.map(r => `
+                    <div class="session-item">
+                        <strong>${r.name}</strong> (#${r.id.slice(0, 8)})<br>
+                        <small>Crypto: ${r.cryptocurrency} | Hashrate: ${r.hashrate} TH/s | Status: ${r.status}</small>
+                    </div>
+                `).join('');
+                
+                document.getElementById('rigs-list').innerHTML = html || '<p style="color: #aaa;">No rigs</p>';
+            } catch (error) {
+                console.error('Rigs error:', error);
+            }
+        }
+
+        async function refreshProfit() {
+            try {
+                const response = await fetch(`${API_BASE}/mining/auto/profit-analysis`);
+                const data = await response.json();
+                
+                const html = `
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-label">Total Daily Profit</div>
+                            <div class="stat-value">${data.totalDailyProfit}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Active Sessions</div>
+                            <div class="stat-value">${data.activeSessions}</div>
+                        </div>
+                    </div>
+                    ${data.sessions.map(s => `
+                        <div class="card" style="background: rgba(255, 215, 0, 0.05);">
+                            <strong>${s.cryptocurrency}</strong><br>
+                            <small>
+                                Reward: ${s.dailyReward} | Power: ${s.dailyPower} | Profit: <span style="color: #00ff00;">${s.dailyProfit}</span><br>
+                                Shares: ${s.sharesAccepted} | Accuracy: ${s.hashAccuracy} | Uptime: ${s.uptime}
+                            </small>
+                        </div>
+                    `).join('')}
+                `;
+                
+                document.getElementById('profit-analysis').innerHTML = html;
+            } catch (error) {
+                console.error('Profit error:', error);
+            }
+        }
+
+        async function stopSession(sessionId) {
+            try {
+                await fetch(`${API_BASE}/mining/auto/stop/${sessionId}`, { method: 'POST' });
+                showAlert('✅ Mining session stopped', 'success');
+                refreshSessions();
+                refreshStats();
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        function saveSettings() {
+            const cost = document.getElementById('electricity-cost').value;
+            const fee = document.getElementById('pool-fee').value;
+            localStorage.setItem('electricity-cost', cost);
+            localStorage.setItem('pool-fee', fee);
+            showAlert('✅ Settings saved', 'success');
+        }
+
+        // Refresh stats every 5 seconds
+        setInterval(refreshStats, 5000);
+        refreshStats();
+    </script>
+
+    <!-- PWA Support -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
