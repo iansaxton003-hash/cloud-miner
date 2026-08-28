@@ -304,18 +304,26 @@
             }
         }
 
-        .loading {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #ffd700;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
+        .profit-meter {
+            height: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin: 10px 0;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .profit-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffd700);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
         }
     </style>
 </head>
@@ -329,9 +337,9 @@
 
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('auto-mine')">AUTO MINE</button>
-            <button class="tab-btn" onclick="switchTab('rigs')">RIGS</button>
-            <button class="tab-btn" onclick="switchTab('sessions')">ACTIVE SESSIONS</button>
-            <button class="tab-btn" onclick="switchTab('profit')">PROFIT</button>
+            <button class="tab-btn" onclick="switchTab('profit')">💰 PROFIT</button>
+            <button class="tab-btn" onclick="switchTab('hashrate')">⚡ HASHRATE</button>
+            <button class="tab-btn" onclick="switchTab('sessions')">SESSIONS</button>
             <button class="tab-btn" onclick="switchTab('settings')">SETTINGS</button>
         </div>
 
@@ -341,7 +349,7 @@
                 <div class="card-title">🚀 Smart Mining Search</div>
                 <p style="color: #aaa; margin-bottom: 15px;">Automatically find and mine profitable cryptocurrencies</p>
                 <button class="btn" onclick="searchAndMine()">SEARCH & AUTO-MINE</button>
-                <p style="color: #888; font-size: 12px; margin-top: 10px;">Scans popular coins (BTC, ETH, LTC, DOGE, XMR, ZEC) and delegates to mining pools</p>
+                <p style="color: #888; font-size: 12px; margin-top: 10px;">Scans popular coins and delegates to real mining pools</p>
             </div>
 
             <div class="card">
@@ -363,7 +371,8 @@
                     <div>
                         <div class="form-group">
                             <label>Hashrate (TH/s)</label>
-                            <input type="number" id="hashrate" value="500" min="1" max="10000000">
+                            <input type="range" id="hashrate-slider" value="500" min="1" max="10000000" step="100" oninput="updateHashrateDisplay()">
+                            <input type="number" id="hashrate" value="500" min="1" max="10000000" oninput="updateHashrateSlider()">
                         </div>
                     </div>
                 </div>
@@ -388,11 +397,38 @@
             </div>
         </div>
 
-        <!-- RIGS TAB -->
-        <div id="rigs" class="tab-content">
+        <!-- PROFIT TAB -->
+        <div id="profit" class="tab-content">
             <div class="card">
-                <div class="card-title">📡 Mining Rigs (50 Slots Available)</div>
-                <div id="rigs-list" style="max-height: 400px; overflow-y: auto;"></div>
+                <div class="card-title">💰 Profit Tracker</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Daily Profit</div>
+                        <div class="stat-value" id="daily-profit">$0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Monthly Profit</div>
+                        <div class="stat-value" id="monthly-profit">$0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Annual Profit</div>
+                        <div class="stat-value" id="annual-profit">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📊 Session Profit Breakdown</div>
+                <div id="profit-analysis"></div>
+            </div>
+        </div>
+
+        <!-- HASHRATE TAB -->
+        <div id="hashrate" class="tab-content">
+            <div class="card">
+                <div class="card-title">⚡ Hashrate Builder</div>
+                <p style="color: #aaa; margin-bottom: 15px;">Adjust mining power across active sessions</p>
+                <div id="hashrate-builder"></div>
             </div>
         </div>
 
@@ -401,14 +437,6 @@
             <div class="card">
                 <div class="card-title">🔄 Active Mining Sessions</div>
                 <div id="sessions-list" class="session-list"></div>
-            </div>
-        </div>
-
-        <!-- PROFIT TAB -->
-        <div id="profit" class="tab-content">
-            <div class="card">
-                <div class="card-title">💵 Profit Analysis</div>
-                <div id="profit-analysis"></div>
             </div>
         </div>
 
@@ -426,20 +454,6 @@
                 </div>
                 <button class="btn" onclick="saveSettings()">SAVE SETTINGS</button>
             </div>
-
-            <div class="card">
-                <div class="card-title">ℹ️ About</div>
-                <p style="color: #aaa; line-height: 1.6;">
-                    Cloud Miner is a real cryptocurrency mining platform that connects to actual blockchain mining pools.<br><br>
-                    <strong>Features:</strong><br>
-                    • 50 upgradeable mining rig slots<br>
-                    • Hashrate range: 0 - 10,000,000 TH/s<br>
-                    • Real-time pool delegation<br>
-                    • Live blockchain data integration<br>
-                    • Actual cryptocurrency rewards<br><br>
-                    <strong>NO SIMULATION - REAL MINING ONLY</strong>
-                </p>
-            </div>
         </div>
     </div>
 
@@ -449,7 +463,6 @@
         const API_BASE = 'http://localhost:3000/api';
         let deferredPrompt;
 
-        // Install PWA
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -474,7 +487,15 @@
             
             if (tabName === 'sessions') refreshSessions();
             if (tabName === 'profit') refreshProfit();
-            if (tabName === 'rigs') refreshRigs();
+            if (tabName === 'hashrate') refreshHashrate();
+        }
+
+        function updateHashrateDisplay() {
+            document.getElementById('hashrate').value = document.getElementById('hashrate-slider').value;
+        }
+
+        function updateHashrateSlider() {
+            document.getElementById('hashrate-slider').value = document.getElementById('hashrate').value;
         }
 
         function showAlert(message, type = 'info') {
@@ -565,54 +586,68 @@
             }
         }
 
-        async function refreshRigs() {
-            try {
-                const response = await fetch(`${API_BASE}/rigs`);
-                const rigs = await response.json();
-                
-                const html = rigs.map(r => `
-                    <div class="session-item">
-                        <strong>${r.name}</strong> (#${r.id.slice(0, 8)})<br>
-                        <small>Crypto: ${r.cryptocurrency} | Hashrate: ${r.hashrate} TH/s | Status: ${r.status}</small>
-                    </div>
-                `).join('');
-                
-                document.getElementById('rigs-list').innerHTML = html || '<p style="color: #aaa;">No rigs</p>';
-            } catch (error) {
-                console.error('Rigs error:', error);
-            }
-        }
-
         async function refreshProfit() {
             try {
                 const response = await fetch(`${API_BASE}/mining/auto/profit-analysis`);
                 const data = await response.json();
                 
-                const html = `
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-label">Total Daily Profit</div>
-                            <div class="stat-value">${data.totalDailyProfit}</div>
+                const dailyProfit = parseFloat(data.totalDailyProfit);
+                const monthlyProfit = dailyProfit * 30;
+                const annualProfit = dailyProfit * 365;
+                
+                document.getElementById('daily-profit').textContent = `$${dailyProfit.toFixed(2)}`;
+                document.getElementById('monthly-profit').textContent = `$${monthlyProfit.toFixed(2)}`;
+                document.getElementById('annual-profit').textContent = `$${annualProfit.toFixed(2)}`;
+                
+                const html = data.sessions.map(s => `
+                    <div class="card" style="background: rgba(255, 215, 0, 0.05); margin-bottom: 10px;">
+                        <strong>${s.cryptocurrency}</strong><br>
+                        <small>Hashrate: ${s.hashrate} TH/s</small><br>
+                        <div class="profit-meter">
+                            <div class="profit-fill" style="width: ${Math.min(parseFloat(s.dailyProfit) / 10, 100)}%">Profit</div>
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Active Sessions</div>
-                            <div class="stat-value">${data.activeSessions}</div>
-                        </div>
+                        <small>Daily: ${s.dailyReward} | Power: ${s.dailyPower} | Net: <span style="color: #00ff00;">${s.dailyProfit}</span></small>
                     </div>
-                    ${data.sessions.map(s => `
-                        <div class="card" style="background: rgba(255, 215, 0, 0.05);">
-                            <strong>${s.cryptocurrency}</strong><br>
-                            <small>
-                                Reward: ${s.dailyReward} | Power: ${s.dailyPower} | Profit: <span style="color: #00ff00;">${s.dailyProfit}</span><br>
-                                Shares: ${s.sharesAccepted} | Accuracy: ${s.hashAccuracy} | Uptime: ${s.uptime}
-                            </small>
-                        </div>
-                    `).join('')}
-                `;
+                `).join('');
                 
                 document.getElementById('profit-analysis').innerHTML = html;
             } catch (error) {
                 console.error('Profit error:', error);
+            }
+        }
+
+        async function refreshHashrate() {
+            try {
+                const response = await fetch(`${API_BASE}/mining/auto`);
+                const data = await response.json();
+                
+                const html = data.sessions.map(s => `
+                    <div class="card" style="background: rgba(255, 215, 0, 0.05); margin-bottom: 10px;">
+                        <strong>${s.cryptocurrency}</strong> - ${s.workerName}<br>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Hashrate: <span style="color: #ffd700;">${s.hashrate} TH/s</span></label>
+                            <input type="range" value="${s.hashrate}" min="0" max="10000000" step="100" oninput="updateHashrate('${s.rigId}', this.value)" style="cursor: pointer;">
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('hashrate-builder').innerHTML = html || '<p style="color: #aaa;">No active sessions</p>';
+            } catch (error) {
+                console.error('Hashrate error:', error);
+            }
+        }
+
+        async function updateHashrate(rigId, hashrate) {
+            try {
+                await fetch(`${API_BASE}/rigs/${rigId}/hashrate`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hashrate: parseInt(hashrate) })
+                });
+                refreshHashrate();
+                refreshStats();
+            } catch (error) {
+                console.error('Hashrate update error:', error);
             }
         }
 
@@ -635,12 +670,10 @@
             showAlert('✅ Settings saved', 'success');
         }
 
-        // Refresh stats every 5 seconds
         setInterval(refreshStats, 5000);
         refreshStats();
     </script>
 
-    <!-- PWA Support -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});

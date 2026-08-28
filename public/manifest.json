@@ -1,0 +1,33 @@
+{
+  "name": "Cloud Miner - Cryptocurrency Mining Platform",
+  "short_name": "Cloud Miner",
+  "description": "Real cryptocurrency mining with 50 rig slots, auto-mining, and profit tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#ffd700",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a2e' width='192' height='192'/><text x='96' y='130' font-size='120' text-anchor='middle' fill='%23ffd700'>⛏️</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%231a1a2e' width='512' height='512'/><text x='256' y='380' font-size='360' text-anchor='middle' fill='%23ffd700'>⛏️</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%231a1a2e' width='540' height='720'/><text x='270' y='100' font-size='60' text-anchor='middle' fill='%23ffd700' font-weight='bold'>Cloud Miner</text><text x='270' y='200' font-size='40' text-anchor='middle' fill='%23fff'>Auto Mining</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ]
+}
