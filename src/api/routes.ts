@@ -47,6 +47,30 @@ export function createRoutes(
     });
   });
 
+  // ==================== NON-CUSTODIAL POOL CATALOG ====================
+  // Metadata only: the client must provide its own wallet and authorize any connection.
+  router.get('/pools', (_req: Request, res: Response) => {
+    res.json([
+      { id: 'braiins-pool', name: 'Braiins Pool', website: 'https://braiins.com/pool', network: 'Bitcoin', connectionType: 'stratum', requiresUserWallet: true },
+      { id: 'btc-com', name: 'BTC.com Pool', website: 'https://pool.btc.com', network: 'Bitcoin', connectionType: 'stratum', requiresUserWallet: true },
+      { id: 'binance-pool', name: 'Binance Pool', website: 'https://pool.binance.com', network: 'Bitcoin', connectionType: 'stratum', requiresUserWallet: true },
+    ]);
+  });
+
+  router.post('/wallet/claim-review', (req: Request, res: Response) => {
+    const { amount = 0, currency = 'USD', walletAddress } = req.body || {};
+    res.json({
+      kind: 'claim-review',
+      amount: Math.max(0, Number(amount) || 0),
+      currency,
+      walletAddress: walletAddress || null,
+      requiresUserConfirmation: true,
+      requiresProviderAuthorization: true,
+      custodialTransfer: false,
+      message: 'Review only. No funds were transferred by this request.',
+    });
+  });
+
   // ==================== PLUGIN ROUTES ====================
   router.get('/plugins', (req: Request, res: Response) => {
     res.json(pluginManager.getAllPlugins());
@@ -326,16 +350,14 @@ export function createRoutes(
    * POST /api/mining/auto/start-simulation - Start mining simulation loop
    */
   router.post('/mining/auto/start-simulation', (req: Request, res: Response) => {
-    miningEngine.startMining();
-    res.json({ success: true, message: 'Mining simulation started' });
+    res.status(410).json({ success: false, error: 'Simulation is disabled; connect authorized hardware or a documented pool integration.' });
   });
 
   /**
    * POST /api/mining/auto/stop-simulation - Stop mining simulation
    */
   router.post('/mining/auto/stop-simulation', (req: Request, res: Response) => {
-    miningEngine.stopAllMining();
-    res.json({ success: true, message: 'Mining simulation stopped' });
+    res.status(410).json({ success: false, error: 'Simulation is disabled.' });
   });
 
   /**

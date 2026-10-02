@@ -398,6 +398,11 @@ export class MiningEngine {
     return this.getActiveSessions().reduce((sum, s) => sum + s.netProfitUSD, 0);
   }
 
+  /** Backward-compatible real-only profit accessor. */
+  getTotalProfit(): number {
+    return this.getTotalRealProfit();
+  }
+
   /**
    * Map symbol to CoinGecko ID
    */
