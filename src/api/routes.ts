@@ -108,6 +108,14 @@ export function createRoutes(
   });
 
   // ==================== MINING ENGINE - AUTO MINE TAB ====================
+  // Legacy automatic discovery is intentionally disabled. Pool and rig authorization must be explicit.
+  router.post('/mining/auto/start', (_req: Request, res: Response) => {
+    res.status(410).json({ success: false, error: 'Legacy auto-mining is disabled. Configure an approved pool and authorize an owned rig through the non-custodial flow.' });
+  });
+  router.post('/mining/auto/search-and-mine', (_req: Request, res: Response) => {
+    res.status(410).json({ success: false, error: 'Automatic pool discovery and mining are disabled. Use explicit approved pool authorization.' });
+  });
+
   /**
    * GET /api/mining/auto - Get all active auto-mining sessions
    */
@@ -133,181 +141,6 @@ export function createRoutes(
         poolLatency: s.poolLatency,
       })),
     });
-  });
-
-  /**
-   * POST /api/mining/auto/start - Search blockchain and auto-start mining
-   * Body: { cryptocurrency: 'BTC', hashrate: 1000, powerConsumption: 800 }
-   */
-  router.post('/mining/auto/start', async (req: Request, res: Response) => {
-    const { cryptocurrency, hashrate = 500, powerConsumption = 800 } = req.body;
-
-    if (!cryptocurrency) {
-      return res.status(400).json({ error: 'Cryptocurrency required' });
-    }
-
-    // Create a rig for this mining session
-    const rig = rigManager.createRig(
-      `Auto-Miner-${cryptocurrency}`,
-      cryptocurrency
-    );
-
-    if (!rig) {
-      return res.status(400).json({ error: 'Cannot create rig - limit reached' });
-    }
-
-    // Default pool configs for major cryptos
-    const poolConfigs: { [key: string]: PoolConnection } = {
-      BTC: {
-        poolUrl: 'stratum.mining.pool.com',
-        poolPort: 3333,
-        walletAddress: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
-        workerName: `cloud-miner-${rig.id.slice(0, 8)}`,
-        password: 'x',
-      },
-      ETH: {
-        poolUrl: 'eth.mining.pool.com',
-        poolPort: 3333,
-        walletAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f42e6f',
-        workerName: `cloud-miner-${rig.id.slice(0, 8)}`,
-        password: 'x',
-      },
-      LTC: {
-        poolUrl: 'ltc.mining.pool.com',
-        poolPort: 3334,
-        walletAddress: 'LepeMro9eHmirPUV6dEkRrGpjV6S6zUvEv',
-        workerName: `cloud-miner-${rig.id.slice(0, 8)}`,
-        password: 'x',
-      },
-      DOGE: {
-        poolUrl: 'doge.mining.pool.com',
-        poolPort: 3333,
-        walletAddress: 'DDogepartyxxxxxxxxxxxxxxxxxxw1DADAob',
-        workerName: `cloud-miner-${rig.id.slice(0, 8)}`,
-        password: 'x',
-      },
-      XMR: {
-        poolUrl: 'xmr.mining.pool.com',
-        poolPort: 3333,
-        walletAddress: '47BkjkhHVxvqHqJC7d5h9U6d2mV1MF9YJaUCmZBjPbgY7aASf4MqTvJhww1E7V3E6wNvjG7vJGZKz1cPmkP3dBWQ4DqAJNH',
-        workerName: `cloud-miner-${rig.id.slice(0, 8)}`,
-        password: 'x',
-      },
-      ZEC: {
-        poolUrl: 'zec.mining.pool.com',
-        poolPort: 3334,
-        walletAddress: 't1VB7d3yw86h1JwqvNFM3H8wgqvGzXxT9gV',
-        workerName: `cloud-miner-${rig.id.slice(0, 8)}`,
-        password: 'x',
-      },
-    };
-
-    const poolConfig = poolConfigs[cryptocurrency.toUpperCase()];
-    if (!poolConfig) {
-      return res.status(400).json({
-        error: `No pool config for ${cryptocurrency}. Supported: BTC, ETH, LTC, DOGE, XMR, ZEC`,
-      });
-    }
-
-    // Connect to pool and start mining
-    const result = await miningEngine.connectAndMine(
-      rig.id,
-      poolConfig,
-      cryptocurrency,
-      hashrate,
-      powerConsumption
-    );
-
-    if (result.success) {
-      rigManager.updateHashrate(rig.id, hashrate);
-      return res.json({
-        success: true,
-        message: `Auto-mining ${cryptocurrency} started`,
-        session: result.session,
-        rig: rig,
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        error: result.error || 'Failed to start mining',
-      });
-    }
-  });
-
-  /**
-   * POST /api/mining/auto/search-and-mine - Smart search for profitable coins and auto-mine
-   */
-  router.post('/mining/auto/search-and-mine', async (req: Request, res: Response) => {
-    const { minProfitPerDay = 0.5, maxRigs = 3 } = req.body;
-
-    try {
-      // Get popular mining coins
-      const popularCoins = await cryptoSearcher.getPopularMiningCoins();
-
-      if (popularCoins.length === 0) {
-        return res.status(400).json({ error: 'Could not fetch cryptocurrency data' });
-      }
-
-      const startedMining: any[] = [];
-      const failedAttempts: any[] = [];
-      let rigsStarted = 0;
-
-      // Try to mine profitable coins
-      for (const coin of popularCoins) {
-        if (rigsStarted >= maxRigs) break;
-
-        const rig = rigManager.createRig(
-          `Auto-Smart-${coin.symbol}`,
-          coin.symbol
-        );
-
-        if (!rig) break;
-
-        // Default pool config
-        const poolConfig: PoolConnection = {
-          poolUrl: `${coin.symbol.toLowerCase()}.mining.pool.com`,
-          poolPort: 3333,
-          walletAddress: `wallet_${coin.symbol}`,
-          workerName: `cloud-${rig.id.slice(0, 8)}`,
-          password: 'x',
-        };
-
-        const result = await miningEngine.connectAndMine(
-          rig.id,
-          poolConfig,
-          coin.symbol,
-          500, // 500 TH/s default
-          800 // 800W power
-        );
-
-        if (result.success && result.session) {
-          rigManager.updateHashrate(rig.id, 500);
-          startedMining.push({
-            coin: coin.symbol,
-            name: coin.name,
-            profit: result.session.netProfitUSD,
-          });
-          rigsStarted++;
-        } else {
-          failedAttempts.push({
-            coin: coin.symbol,
-            error: result.error,
-          });
-        }
-      }
-
-      res.json({
-        success: rigsStarted > 0,
-        rigsStarted,
-        mining: startedMining,
-        failed: failedAttempts,
-        totalProfit: miningEngine.getTotalProfit().toFixed(2),
-      });
-    } catch (error) {
-      res.status(500).json({
-        error: `Search and mine failed: ${error instanceof Error ? error.message : 'Unknown'}`,
-      });
-    }
   });
 
   /**
